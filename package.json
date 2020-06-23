@@ -1,7 +1,7 @@
 {
-   "name": "slack-bot-game",
+   "name": "tennis-calculator",
    "version": "1.0.0",
-   "description": "Slack bot game",
+   "description": "Tennis Calculator",
    "main": "index.js",
    "scripts": {
       "start": "ts-node-dev src/index.ts",
@@ -9,21 +9,21 @@
    },
    "repository": {
       "type": "git",
-      "url": "git+https://github.com/kanwang198801/slack-bot-game.git"
+      "url": "git+https://github.com/kanwang198801/tennis-calculator.git"
    },
    "author": "Kan Wang",
    "license": "ISC",
    "bugs": {
-      "url": "https://github.com/kanwang198801/slack-bot-game/issues"
+      "url": "https://github.com/kanwang198801/tennis-calculator/issues"
    },
-   "homepage": "https://github.com/kanwang198801/slack-bot-game#readme",
+   "homepage": "hhttps://github.com/kanwang198801/tennis-calculator#readme",
    "dependencies": {
-      "@types/node": "^14.0.13",
       "data-store": "^4.0.3",
       "dotenv": "^8.2.0",
       "slackbots": "^1.2.0"
    },
    "devDependencies": {
+      "@types/node": "^14.0.13",
       "ts-node-dev": "^1.0.0-pre.49",
       "typescript": "^3.9.5"
    }
