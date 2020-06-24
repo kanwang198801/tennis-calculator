@@ -4,4 +4,4 @@ npm install
 
 ## Start Server
 
-npm start
+npm start full_tournament.txt
