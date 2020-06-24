@@ -1,6 +1,7 @@
 import fs from 'fs';
 import readline from 'readline';
 import { MatchType, SetType, GameType, PlayerType } from './types';
+import { parse } from 'path';
 
 const matches: MatchType[] = [];
 let players: PlayerType[] = [];
@@ -134,9 +135,49 @@ const printResult = () => {
    });
 };
 
+const getMatch = (id: string) => {
+   const match = matches.find((match) => match.matchId === id);
+   if (match) {
+      console.info(`${match.winner} defeated ${match.loser}`);
+      console.info(`${match.winnerWinSets} sets to ${match.loserWinSets}`);
+   } else {
+      console.info('NOT FOUND');
+   }
+};
+
+const getPlayer = (name: string) => {
+   const player = players.find((player) => player.name === name);
+   if (player) {
+      console.info(`${player.winCount} ${player.loseCount}`);
+   } else {
+      console.info('NOT FOUND');
+   }
+};
+
 const main = async () => {
+   if (process.argv.length < 3) {
+      console.log('COMMAND IS NOT CORRECT');
+      process.exit(1);
+   }
    await processData();
-   printResult();
+
+   if (process.argv[3]) {
+      if (process.argv[3].includes('Score Match')) {
+         const querySplited = process.argv[3].split(' ');
+         const id = querySplited[querySplited.length - 1];
+         getMatch(id);
+      } else if (process.argv[3].includes('Games Player')) {
+         const querySplited = process.argv[3].split(' ');
+         const name = `${querySplited[querySplited.length - 2]} ${
+            querySplited[querySplited.length - 1]
+         }`;
+         getPlayer(name);
+      } else {
+         console.info('QUERY IS NOT CORRECT');
+      }
+   } else {
+      printResult();
+   }
 };
 
 main();
