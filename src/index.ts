@@ -28,7 +28,7 @@ try {
       terminal: false,
    });
    rl.on('line', (line: string) => {
-      if (!line || waitingNewMatch) return;
+      if (!line) return;
       if (line.includes('Match')) {
          match = {
             ...match,
@@ -50,6 +50,7 @@ try {
          match.player0Name = playerNames[0];
          match.player1Name = playerNames[1];
       } else {
+         if (waitingNewMatch) return;
          if (parseInt(line) === 0) {
             game.player0WinCount++;
          }
@@ -58,68 +59,50 @@ try {
          }
          const isGameFinish =
             Math.abs(game.player0WinCount - game.player1WinCount) >= 2;
-         const isSetFinish =
-            set.player0WinCount === 6 || set.player1WinCount === 6;
-         const isMatchFinish =
-            match.player0WinCount === 2 || match.player1WinCount === 2;
 
          if (
             isGameFinish &&
             (game.player0WinCount >= 4 || game.player1WinCount >= 4)
          ) {
-            const foundPlayer0 = players.find(
-               (player) => player.name === match.player0Name
-            );
-            const foundPlayer1 = players.find(
-               (player) => player.name === match.player1Name
-            );
-            if (game.player0WinCount > game.player1WinCount) {
-               players = players.map((player) => {
-                  if (player == foundPlayer0) {
-                     return {
-                        ...player,
-                        winCount: player.winCount++,
-                     };
-                  }
-                  if (player == foundPlayer0) {
-                     return {
-                        ...player,
-                        winCount: player.loseCount++,
-                     };
-                  }
-                  return player;
-               });
-            } else {
-               players = players.map((player) => {
-                  if (player == foundPlayer1) {
-                     return {
-                        ...player,
-                        winCount: player.winCount++,
-                     };
-                  }
-                  if (player == foundPlayer0) {
-                     return {
-                        ...player,
-                        winCount: player.loseCount++,
-                     };
-                  }
-                  return player;
-               });
-            }
             game.player0WinCount > game.player1WinCount
                ? set.player0WinCount++
                : set.player1WinCount++;
+            set.games.push(game);
             game = { player0WinCount: 0, player1WinCount: 0 };
          }
+         const isSetFinish =
+            set.player0WinCount === 6 || set.player1WinCount === 6;
          if (isSetFinish) {
-            match.sets.push(set);
             set.player0WinCount > set.player1WinCount
                ? match.player0WinCount++
                : match.player1WinCount++;
+
+            players = players.map((player) => {
+               if (player.name == match.player0Name) {
+                  const newPlayer = {
+                     ...player,
+                     winCount: player.winCount + set.player0WinCount,
+                     loseCount: player.loseCount + set.player1WinCount,
+                  };
+                  return newPlayer;
+               }
+               if (player.name == match.player1Name) {
+                  const newPlayer = {
+                     ...player,
+                     winCount: player.winCount + set.player1WinCount,
+                     loseCount: player.loseCount + set.player0WinCount,
+                  };
+                  return newPlayer;
+               }
+               return player;
+            });
+            match.sets.push(set);
             set = { games: [], player0WinCount: 0, player1WinCount: 0 };
          }
+         const isMatchFinish =
+            match.player0WinCount === 2 || match.player1WinCount === 2;
          if (isMatchFinish) {
-            match.player0WinCount > set.player1WinCount
+            match.player0WinCount > match.player1WinCount
                ? ((match.winner = match.player0Name),
                  (match.loser = match.player1Name),
                  (match.winnerWinSets = match.player0WinCount),
@@ -134,7 +117,8 @@ try {
             console.info(
                `${match.winnerWinSets} sets to ${match.loserWinSets}`
             );
-
+            console.info(players);
+            console.info(match);
             matches.push(match);
             waitingNewMatch = true;
             match = {
