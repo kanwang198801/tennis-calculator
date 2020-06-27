@@ -1,20 +1,16 @@
 import fs from 'fs';
 import readline from 'readline';
-import { MatchType, SetType, GameType, PlayerType } from './types';
-import { getMatch, getPlayer, getAll } from './queries';
+import { getMatch, getPlayer, getAll } from './controller/functions';
+import Player from './models/player';
+import Game from './models/game';
+import Set from './models/set';
+import Match from './models/match';
 
-const matches: MatchType[] = [];
-let players: PlayerType[] = [];
-let match: MatchType = { sets: [], player0WinCount: 0, player1WinCount: 0 };
-let set: SetType = {
-   games: [],
-   player0WinCount: 0,
-   player1WinCount: 0,
-};
-let game: GameType = {
-   player0WinCount: 0,
-   player1WinCount: 0,
-};
+const matches: Match[] = [];
+let players: Player[] = [];
+let match = new Match();
+let set = new Set();
+let game = new Game();
 let waitingNewMatch = false;
 
 const rl = readline.createInterface({
@@ -27,6 +23,7 @@ const processData = async () => {
    try {
       for await (const line of rl) {
          if (!line) continue;
+
          if (line.includes('Match')) {
             match = {
                ...match,
@@ -41,7 +38,8 @@ const processData = async () => {
                   (player) => player.name === playerName
                );
                if (!foundPlayer) {
-                  players.push({ name: playerName, winCount: 0, loseCount: 0 });
+                  const player = new Player(playerName);
+                  players.push(player);
                }
             });
 
@@ -66,10 +64,12 @@ const processData = async () => {
                   ? set.player0WinCount++
                   : set.player1WinCount++;
                set.games.push(game);
-               game = { player0WinCount: 0, player1WinCount: 0 };
+               game = new Game();
             }
+
             const isSetFinish =
                set.player0WinCount === 6 || set.player1WinCount === 6;
+
             if (isSetFinish) {
                set.player0WinCount > set.player1WinCount
                   ? match.player0WinCount++
@@ -95,7 +95,7 @@ const processData = async () => {
                   return player;
                });
                match.sets.push(set);
-               set = { games: [], player0WinCount: 0, player1WinCount: 0 };
+               set = new Set();
             }
             const isMatchFinish =
                match.player0WinCount === 2 || match.player1WinCount === 2;
@@ -112,11 +112,7 @@ const processData = async () => {
 
                matches.push(match);
                waitingNewMatch = true;
-               match = {
-                  sets: [],
-                  player0WinCount: 0,
-                  player1WinCount: 0,
-               };
+               match = new Match();
             }
          }
       }
@@ -148,6 +144,7 @@ const main = async () => {
       }
    } else {
       getAll(matches);
+      // console.info(players);
    }
 };
 
