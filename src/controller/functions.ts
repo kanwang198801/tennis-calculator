@@ -1,6 +1,7 @@
-import { MatchType, PlayerType } from './types';
+import Player from '../models/player';
+import Match from '../models/match';
 
-export const getMatch = (matches: MatchType[], id: string) => {
+export const getMatch = (matches: Match[], id: string) => {
    const match = matches.find((match) => match.matchId === id);
    if (match) {
       console.info(`${match.winner} defeated ${match.loser}`);
@@ -10,7 +11,7 @@ export const getMatch = (matches: MatchType[], id: string) => {
    }
 };
 
-export const getPlayer = (players: PlayerType[], name: string) => {
+export const getPlayer = (players: Player[], name: string) => {
    const player = players.find((player) => player.name === name);
    if (player) {
       console.info(`${player.winCount} ${player.loseCount}`);
@@ -19,7 +20,7 @@ export const getPlayer = (players: PlayerType[], name: string) => {
    }
 };
 
-export const getAll = (matches: MatchType[]) => {
+export const getAll = (matches: Match[]) => {
    matches.map((match) => {
       console.info(`Score Match ${match.matchId}`);
       console.info(`Games Player ${match.winner}`);
