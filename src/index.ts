@@ -1,6 +1,7 @@
 import fs from 'fs';
 import readline from 'readline';
-import { getMatch, getPlayer, getAll } from './controller/functions';
+import { getMatch, getAll } from './controller/match';
+import { getPlayer } from './controller/player';
 import Player from './models/player';
 import Game from './models/game';
 import Set from './models/set';
